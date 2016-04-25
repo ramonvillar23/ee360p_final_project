@@ -3,42 +3,30 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
-public abstract class Monitor {
-	ReentrantLock mutex = new ReentrantLock();
-	Condition threadChecker = mutex.newCondition();
-	Condition waitingThreads = mutex.newCondition();	
-	/**
-	 * Wrapper class for what the monitor will do.
-	 * This allows to notify other threads when monitor
-	 * returns normally.
-	 */
-	public void runMonitor()
+public class Monitor {
+	ReentrantLock threads = new ReentrantLock();
+	public void customWait()
 	{
-		mutex.lock();
-		this.mainMethod();
-		mutex.unlock();
+		try {
+			threads.wait();
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-
-	/**
-	 * User code goes here
-	 */
-	public abstract void mainMethod();
-
 	public class ThreadChecker implements Runnable {
 		/**
-		 * Will check whenever lock is free to see
-		 * if a thread can try to get the monitor
+		 * Will notify all threads
 		 */
-		@Override
 		public void run() {
-			mutex.lock();
-			if(mutex.hasQueuedThreads())
-			{
-				mutex.notifyAll();
+			threads.notifyAll();
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			mutex.unlock();
-		}
-		
+		}	
 	}
 }
