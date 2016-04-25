@@ -4,15 +4,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 public class Monitor {
-	public ReentrantLock threads = new ReentrantLock();
-	public void customWait()
+
+	public synchronized void customWait()
 	{
-		threads.lock();
 		try {
-			threads.wait();
-			
+			wait();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -21,7 +18,7 @@ public class Monitor {
 		 * Will notify all threads
 		 */
 		public void run() {
-			threads.notifyAll();
+			Monitor.this.notifyAll();
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {

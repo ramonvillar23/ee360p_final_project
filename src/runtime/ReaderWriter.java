@@ -6,24 +6,24 @@ public class ReaderWriter extends Monitor{
 
 	private int readers  = 0;
 	private int writers  = 0;
-	void startRead()
+	synchronized void startRead()
 	{
 		while(writers != 0) this.customWait();
 		readers++;
 	}
 	
-	void endRead()
+	synchronized void endRead()
 	{
 		readers--;
 	}
 	
-	void startWrite()
+	synchronized void startWrite()
 	{
 		while(writers != 0 || readers != 0) this.customWait();
 		writers++;
 	}
 	
-	void endWrite()
+	synchronized void endWrite()
 	{
 		writers = 0;
 	}
