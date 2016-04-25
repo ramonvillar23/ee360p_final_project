@@ -4,9 +4,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 public class Monitor {
-	ReentrantLock threads = new ReentrantLock();
+	public ReentrantLock threads = new ReentrantLock();
 	public void customWait()
 	{
+		threads.lock();
 		try {
 			threads.wait();
 			
