@@ -8,7 +8,12 @@ public class Main extends Monitor{
 		// TODO Auto-generated method stub
 
 	}
+
 	@Override
-	public void doWork(){}
+	public void mainMethod() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
