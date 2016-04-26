@@ -1,3 +1,5 @@
+package lib;
+
 public abstract class VersionObject
 {
 	private int version;
