@@ -1,10 +1,8 @@
 package lib;
 
-public class Monitor {
+import java.util.ArrayList;
+import java.util.function.Predicate;
 
-	public void doWork() {
-		// TODO Auto-generated method stub
-		
-	}
+public class Monitor {
 
 }
