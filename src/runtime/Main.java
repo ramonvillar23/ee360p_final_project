@@ -17,11 +17,5 @@ public class Main extends Monitor{
 	
 	
 	
-	@Override
-	public void doWork(){
-
-		Predicate<Object> i  = (s)-> s.length() > 5;
-		waitUntil();
-	}
 
 }

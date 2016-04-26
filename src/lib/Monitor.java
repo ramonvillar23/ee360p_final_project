@@ -6,10 +6,10 @@ import java.util.function.Predicate;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-<<<<<<< HEAD
+
 public class Monitor {
 
-=======
+
 	public synchronized void customWait()
 	{
 		try {
@@ -32,5 +32,4 @@ public class Monitor {
 			}
 		}	
 	}
->>>>>>> c81f1419edd65d1c2f185299581d0ced02fb9328
 }
