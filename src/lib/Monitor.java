@@ -13,40 +13,64 @@ public class Monitor {
 
 	ArrayList<VersionObject> thingsAlreadyWaitingOn = new ArrayList<>(); 
 	ArrayList<VersionObject> localCopyOfObjects = new ArrayList<>();
-	HashMap<VersionObject, Condition> conditionVariables = new HashMap<>(); //will group threads into different conditions
-
-	void customWait(VersionObject toWaitOn) throws CloneNotSupportedException, InterruptedException
+	HashMap<Integer, ArrayList<Condition>> conditionVariables = new HashMap<>(); //will group threads into different conditions
+	boolean readyToAwake = false;
+	public Monitor(){
+		Thread notifier = new Thread(new ThreadNotifier());
+		notifier.start();
+	}
+	
+	final private Lock aLock = new ReentrantLock();
+ public void customWait(VersionObject toWaitOn) throws CloneNotSupportedException, InterruptedException
 	{
-		
-		
+		aLock.lock();
+		Condition newCond = null;
+		//Only checks the ID, not the version
 		if(!thingsAlreadyWaitingOn.contains(toWaitOn)) //not here so need to add it
 		{
 			thingsAlreadyWaitingOn.add(toWaitOn);
-			localCopyOfObjects.add((VersionObject)toWaitOn.clone()); //local copy of object to know if it changes in future
-			Lock aLock = new ReentrantLock();
-			Condition uniqueCondition = aLock.newCondition();
-			conditionVariables.put(toWaitOn, uniqueCondition);	//each parameter will point to an arraylist of conditions (threads waiting for it)
+			localCopyOfObjects.add(toWaitOn.clone()); //local copy of object to know if it changes in future
+			ArrayList<Condition> newConditionList = new ArrayList<Condition>();
+			newCond = aLock.newCondition();
+			newConditionList.add(newCond);
+			conditionVariables.put(toWaitOn.getId(), newConditionList);	//each parameter will point to an arraylist of conditions (threads waiting for it)
+		}
+		else{
+			ArrayList<Condition> listToAddTo = conditionVariables.get(thingsAlreadyWaitingOn.get(thingsAlreadyWaitingOn.indexOf(toWaitOn)).getId());
+			newCond = aLock.newCondition();
+			listToAddTo.add(newCond);
 		}
 		
-		conditionVariables.get(toWaitOn).await();
+		if(!readyToAwake){
+			readyToAwake = true;
+		}
+		newCond.await();
 	}
 	
 	class ThreadNotifier implements Runnable 
 	{
 		public void run()
 		{
-			for(VersionObject param : conditionVariables.keySet())
-			{
-				if(!param.equals(thingsAlreadyWaitingOn.get(localCopyOfObjects.indexOf(param)))) //if local copy is different to actual object
-				{
-					//if object changed, (not equal to local copy), notify all waiting threads on that variable
-					conditionVariables.get(param).notifyAll(); //get conditions in hash table
-					//update local copy
-					int index = localCopyOfObjects.indexOf(param);
-					try {
-						localCopyOfObjects.set(index, (VersionObject) thingsAlreadyWaitingOn.get(index).clone());
-					} catch (CloneNotSupportedException e) {
-						e.printStackTrace();
+			
+			while(true){
+				if(readyToAwake){
+					for(Integer id : conditionVariables.keySet())
+					{
+						VersionObject dummy = new VersionObject(-1, id);
+						VersionObject localCopy = localCopyOfObjects.get(localCopyOfObjects.indexOf(dummy));
+						VersionObject refCopy = thingsAlreadyWaitingOn.get(thingsAlreadyWaitingOn.indexOf(dummy));
+						//Checks the version and the id
+						if(!localCopy.equals(refCopy)) //if local copy is different to actual object
+						{
+							//if object changed, (not equal to local copy), notify all waiting threads on that variable
+							ArrayList<Condition> conditionList = conditionVariables.get(id); //get conditions in hash table
+							for(Condition c : conditionList){
+								c.notify();
+							}
+							//update local copy
+							int index = localCopyOfObjects.indexOf(id);
+							localCopyOfObjects.set(index, refCopy.clone());
+						}
 					}
 				}
 			}

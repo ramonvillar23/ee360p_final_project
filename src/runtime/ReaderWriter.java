@@ -1,35 +1,50 @@
 package runtime;
 
 import lib.Monitor;
+import lib.VersionInteger;
+import lib.VersionObject;
 
 public class ReaderWriter extends Monitor{
 
-	private int readers  = 0;
-	private int writers  = 0;
+	private VersionInteger readers  = new VersionInteger(0);
+	private VersionInteger writers  = new VersionInteger(0);
 	synchronized void startRead()
 	{
-		while(writers != 0) this.customWait();
-		readers++;
+		while(writers.getValue() !=  0) 
+		{
+			try {
+				customWait(writers);
+			} catch (CloneNotSupportedException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		readers.getAndInc();
 	}
 	
 	synchronized void endRead()
 	{
-		readers--;
+		readers.getAndDec();
 	}
 	
 	synchronized void startWrite()
 	{
-		while(writers != 0 || readers != 0) this.customWait();
-		writers++;
+		while(writers.getValue() != 0 || readers.getValue() != 0)
+		{
+			try {
+				customWait(readers);
+			} catch (CloneNotSupportedException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		writers.getAndInc();
+		
 	}
 	
 	synchronized void endWrite()
 	{
-		writers = 0;
+		writers.setValue(0);
 	}
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
 }
