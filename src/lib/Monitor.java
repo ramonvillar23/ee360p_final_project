@@ -51,6 +51,13 @@ public class Monitor {
 		aLock.unlock(); //Condition will return with the lock acquired so release it
 	}
 	
+	public void customWait(VersionObject ToWaitOn) throws CloneNotSupportedException, InterruptedException
+	{
+		ArrayList<VersionObject> toWaitOnList = new ArrayList<VersionObject>();
+		toWaitOnList.add(ToWaitOn);
+		customWait(toWaitOnList);
+	}
+	
 	class ThreadNotifier implements Runnable 
 	{
 		public void run()
