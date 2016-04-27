@@ -33,7 +33,7 @@ public class Main extends Monitor{
 	
 	public class Reader implements Runnable {
 		public void run() {
-			while(true)
+			for(int i = 0; i < 50; i++)
 			{
 				rw.startRead();
 				try {
@@ -57,18 +57,18 @@ public class Main extends Monitor{
 	public class Writer implements Runnable {
 
 		public void run() {
-			while(true)
+			for(int i = 0; i < 50; i++)
 			{
 				rw.startWrite();
 				try {
-					TimeUnit.SECONDS.sleep(1);
+					TimeUnit.MILLISECONDS.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				rw.endWrite();
 				try {
-					TimeUnit.SECONDS.sleep(1);
+					TimeUnit.MILLISECONDS.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
