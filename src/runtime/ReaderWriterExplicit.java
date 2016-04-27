@@ -50,7 +50,7 @@ public class ReaderWriterExplicit
 	
 	public void endWrite()
 	{
-		monitorLock.unlock();
+		monitorLock.lock();
 		numWriters--;
 		System.out.println(Thread.currentThread().getId()+":Exiting write");
 		rw.signalAll();
