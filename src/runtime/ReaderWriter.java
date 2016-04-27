@@ -50,7 +50,7 @@ public class ReaderWriter extends Monitor{
 				ArrayList<VersionObject> toWait = new ArrayList<>();
 				toWait.add(readers);
 				toWait.add(writers);
-				System.out.println(Thread.currentThread().getId()+":Writer is waiting for "+readers.getValue()+"reader and "+writers.getValue()+"writers");
+				System.out.println(Thread.currentThread().getId()+":Writer is waiting for "+readers.getValue()+" reader and "+writers.getValue()+" writers");
 				customWait(toWait);
 				//customWait releases mutex... need to reacquire
 				mutex.lock();
