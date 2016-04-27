@@ -19,7 +19,6 @@ public class ReaderWriter extends Monitor{
 			try {
 				ArrayList<VersionObject> toWait = new ArrayList<>();
 				toWait.add(writers);
-				mutex.unlock();
 				customWait(toWait);
 				mutex.lock();
 			} catch (CloneNotSupportedException | InterruptedException e) {
@@ -49,7 +48,6 @@ public class ReaderWriter extends Monitor{
 				ArrayList<VersionObject> toWait = new ArrayList<>();
 				toWait.add(readers);
 				toWait.add(writers);
-				mutex.unlock();
 				customWait(toWait);
 				mutex.lock();
 			} catch (CloneNotSupportedException | InterruptedException e) {

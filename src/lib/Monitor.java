@@ -21,11 +21,11 @@ public class Monitor {
 	final private Lock aLock = new ReentrantLock();
 	final protected Lock mutex = new ReentrantLock();
 
+	//WILL BE CALLED WITH A MUTEX LOCK ALREADY ACQUIRED
 	public void customWait(ArrayList<VersionObject> listOfToWaitOn) throws CloneNotSupportedException, InterruptedException
 	{
-	 	mutex.lock();
 		aLock.lock();
-		Condition newCond = null;
+		Condition newCond = aLock.newCondition(); //one condition for the whole thread
 		//Only checks the ID, not the version
 		for(VersionObject toWaitOn: listOfToWaitOn)
 		{
@@ -34,13 +34,11 @@ public class Monitor {
 				thingsAlreadyWaitingOn.add(toWaitOn);
 				localCopyOfObjects.add(toWaitOn.clone()); //local copy of object to know if it changes in future
 				ArrayList<Condition> newConditionList = new ArrayList<Condition>();
-				newCond = aLock.newCondition();
 				newConditionList.add(newCond);
 				conditionVariables.put(toWaitOn.getId(), newConditionList);	//each parameter will point to an arraylist of conditions (threads waiting for it)
 			}
 			else{
 				ArrayList<Condition> listToAddTo = conditionVariables.get(toWaitOn.getId());
-				newCond = aLock.newCondition();
 				listToAddTo.add(newCond);
 			}
 			

@@ -13,9 +13,7 @@ public class Main extends Monitor{
 		super();
 	}
 	ReaderWriter rw = new ReaderWriter();
-	public static void main(String[] args) {
-		VersionInteger newInt = new VersionInteger();
-		
+	public static void main(String[] args) {		
 		//IntThread thread1 = new IntThread(newInt, mon, 1);
 		//IntThread thread2 = new IntThread(newInt, mon, 2);
 		Main test = new Main();
