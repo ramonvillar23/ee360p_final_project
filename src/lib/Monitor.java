@@ -21,8 +21,11 @@ public class Monitor {
 	}
 	
 	final private Lock aLock = new ReentrantLock();
+	final protected Lock mutex = new ReentrantLock();
+
  public void customWait(VersionObject toWaitOn) throws CloneNotSupportedException, InterruptedException
 	{
+	 	mutex.lock();
 		aLock.lock();
 		Condition newCond = null;
 		//Only checks the ID, not the version
@@ -44,7 +47,9 @@ public class Monitor {
 		if(!readyToAwake){
 			readyToAwake = true;
 		}
+		mutex.unlock();
 		newCond.await();
+		aLock.unlock();
 	}
 	
 	class ThreadNotifier implements Runnable 
@@ -54,24 +59,30 @@ public class Monitor {
 			
 			while(true){
 				if(readyToAwake){
+					mutex.lock();
+					aLock.lock();
 					for(Integer id : conditionVariables.keySet())
 					{
 						VersionObject dummy = new VersionObject(-1, id);
 						VersionObject localCopy = localCopyOfObjects.get(localCopyOfObjects.indexOf(dummy));
 						VersionObject refCopy = thingsAlreadyWaitingOn.get(thingsAlreadyWaitingOn.indexOf(dummy));
 						//Checks the version and the id
-						if(!localCopy.equals(refCopy)) //if local copy is different to actual object
+						if(!localCopy.equalsVersion(refCopy)) //if local copy is different to actual object
 						{
 							//if object changed, (not equal to local copy), notify all waiting threads on that variable
 							ArrayList<Condition> conditionList = conditionVariables.get(id); //get conditions in hash table
 							for(Condition c : conditionList){
-								c.notify();
+								c.signal();
 							}
+							//signaled all conditions, now clear arraylist so they can add themselves if necessary
+							conditionVariables.put(id, new ArrayList<Condition>());
 							//update local copy
-							int index = localCopyOfObjects.indexOf(id);
+							int index = localCopyOfObjects.indexOf(new VersionObject(-1, id));
 							localCopyOfObjects.set(index, refCopy.clone());
 						}
 					}
+					aLock.unlock();
+					mutex.unlock();
 				}
 			}
 		}
