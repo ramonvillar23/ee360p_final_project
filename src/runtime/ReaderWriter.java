@@ -13,12 +13,13 @@ public class ReaderWriter extends Monitor{
 	void startRead()
 	{
 		mutex.lock();
-		System.out.println("About to request read");
+		//System.out.println("About to request read");
 		while(writers.getValue() !=  0) 
 		{
 			try {
 				ArrayList<VersionObject> toWait = new ArrayList<>();
 				toWait.add(writers);
+				System.out.println(Thread.currentThread().getId()+":Reader is waiting for "+writers.getValue()+" writers to exit.");
 				customWait(toWait);
 				//customWait releases mutex... need to reacquire
 				mutex.lock();
@@ -26,7 +27,7 @@ public class ReaderWriter extends Monitor{
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Read Request succesful");
+		System.out.println(Thread.currentThread().getId()+":Read Request succesful");
 		readers.getAndInc();
 		mutex.unlock();
 	}
@@ -34,7 +35,7 @@ public class ReaderWriter extends Monitor{
 	void endRead()
 	{
 		mutex.lock();
-		System.out.println("Exiting read");
+		System.out.println(Thread.currentThread().getId()+":Exiting read");
 		readers.getAndDec();
 		mutex.unlock();
 	}
@@ -42,13 +43,14 @@ public class ReaderWriter extends Monitor{
 	void startWrite()
 	{
 		mutex.lock();
-		System.out.println("About to request write");
+		//System.out.println("About to request write");
 		while(writers.getValue() != 0 || readers.getValue() != 0)
 		{
 			try {
 				ArrayList<VersionObject> toWait = new ArrayList<>();
 				toWait.add(readers);
 				toWait.add(writers);
+				System.out.println(Thread.currentThread().getId()+":Writer is waiting for "+readers.getValue()+"reader and "+writers.getValue()+"writers");
 				customWait(toWait);
 				//customWait releases mutex... need to reacquire
 				mutex.lock();
@@ -57,7 +59,7 @@ public class ReaderWriter extends Monitor{
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Write Request succesful");
+		System.out.println(Thread.currentThread().getId()+":Write Request succesful");
 		writers.getAndInc();
 		mutex.unlock();
 	}

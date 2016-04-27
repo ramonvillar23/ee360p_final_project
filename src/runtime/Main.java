@@ -19,8 +19,16 @@ public class Main extends Monitor{
 		Main test = new Main();
 		Thread t1 = new Thread(test.new Reader());
 		Thread t2 = new Thread(test.new Writer());
+		Thread t3 = new Thread(test.new Reader());
+		Thread t4 = new Thread(test.new Writer());
+		Thread t5 = new Thread(test.new Reader());
+		Thread t6 = new Thread(test.new Writer());
 		t1.start();
 		t2.start();
+		t3.start();
+		t4.start();
+		t5.start();
+		t6.start();
 	}
 	
 	public class Reader implements Runnable {
