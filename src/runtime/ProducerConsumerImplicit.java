@@ -3,7 +3,7 @@ package runtime;
 import lib.Monitor;
 import lib.VersionInteger;
 
-class ProducerConsumerImplicit extends Monitor{
+public class ProducerConsumerImplicit extends Monitor{
    final int size = 10;
 
    final Object[] buffer = new Object[size];
@@ -13,10 +13,12 @@ class ProducerConsumerImplicit extends Monitor{
    public void put(Object x) throws InterruptedException {
      mutex.lock();
      try {
-       while (count.getValue() == buffer.length)
+       while (count.getValue() == buffer.length){
     	   System.out.println(Thread.currentThread().getId()+":Puter is waiting");
     	   customWait(count);
-       mutex.lock();
+    	   mutex.lock();
+       }
+       
        System.out.println(Thread.currentThread().getId()+":Puter put value");
        buffer[inBuf] = x;
        inBuf = (inBuf + 1) % size;
@@ -35,10 +37,12 @@ class ProducerConsumerImplicit extends Monitor{
      mutex.lock();
      Object x = null;
      try {
-       while (count.getValue() == 0)
+       while (count.getValue() == 0){
     	   System.out.println(Thread.currentThread().getId()+":Taker is waiting");
-         customWait(count);
-       mutex.lock();
+    	   customWait(count);
+    	   mutex.lock();
+       }
+      
        System.out.println(Thread.currentThread().getId()+":Taker took element");
        x = buffer[outBuf];
        outBuf = (outBuf + 1) % size;
