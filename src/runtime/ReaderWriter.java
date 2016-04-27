@@ -67,7 +67,7 @@ public class ReaderWriter extends Monitor{
 	void endWrite()
 	{
 		mutex.lock();
-		System.out.println("Exiting write");
+		System.out.println(Thread.currentThread().getId()+":Exiting write");
 		writers.setValue(0);
 		mutex.unlock();
 	}
