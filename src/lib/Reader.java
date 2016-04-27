@@ -1,7 +1,5 @@
 package lib;
 
-import java.util.concurrent.TimeUnit;
-
 import runtime.ReaderWriterImplicit;
 
 public class Reader implements Runnable {
