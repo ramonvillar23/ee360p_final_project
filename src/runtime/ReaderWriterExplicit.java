@@ -14,17 +14,21 @@ public class ReaderWriterExplicit
 	public void startRead() throws InterruptedException
 	{
 		monitorLock.lock();
-		numReaders++;
 		while(numWriters > 0)
 		{
+			System.out.println(Thread.currentThread().getId()+":Reader is waiting for "+numWriters+" writers to exit.");
 			rw.await();
 		}
+		
+		numReaders++;
+		System.out.println(Thread.currentThread().getId()+":Read Request succesful");
 		monitorLock.unlock();
 	}
 	
 	public void endRead()
 	{
 		monitorLock.lock();
+		System.out.println(Thread.currentThread().getId()+":Exiting read");
 		numReaders--;
 		rw.signalAll();
 		monitorLock.unlock();
@@ -33,11 +37,14 @@ public class ReaderWriterExplicit
 	public void startWrite() throws InterruptedException
 	{
 		monitorLock.lock();
-		numWriters++;
-		while(numWriters > 1 || numReaders > 0)
+		
+		while(numWriters > 0 || numReaders > 0)
 		{
+			System.out.println(Thread.currentThread().getId()+":Writer is waiting for "+numReaders+" reader and "+numWriters+" writers");
 			rw.await();
 		}
+		numWriters++;
+		System.out.println(Thread.currentThread().getId()+":Write Request succesful");
 		monitorLock.unlock();
 	}
 	
@@ -45,6 +52,7 @@ public class ReaderWriterExplicit
 	{
 		monitorLock.unlock();
 		numWriters--;
+		System.out.println(Thread.currentThread().getId()+":Exiting write");
 		rw.signalAll();
 		monitorLock.unlock();
 	}
