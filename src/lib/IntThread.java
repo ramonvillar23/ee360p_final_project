@@ -15,6 +15,7 @@ public class IntThread implements Runnable
 	
 	public void run()
 	{
+		/*
 		for(int i = 0; i < 100; i++)
 		{
 			System.out.println("Thread " + id + ": " + verInt.getAndInc());
@@ -31,5 +32,6 @@ public class IntThread implements Runnable
 				e.printStackTrace();
 			}
 		}
+		*/
 	}
 }

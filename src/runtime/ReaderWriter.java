@@ -1,13 +1,15 @@
 package runtime;
 
+import java.util.ArrayList;
+
 import lib.Monitor;
 import lib.VersionInteger;
 import lib.VersionObject;
 
 public class ReaderWriter extends Monitor{
 
-	private VersionInteger readers  = new VersionInteger(0);
-	private VersionInteger writers  = new VersionInteger(0);
+	private VersionInteger readers  = new VersionInteger(0, "readers");
+	private VersionInteger writers  = new VersionInteger(0, "writers");
 	void startRead()
 	{
 		mutex.lock();
@@ -15,8 +17,10 @@ public class ReaderWriter extends Monitor{
 		while(writers.getValue() !=  0) 
 		{
 			try {
+				ArrayList<VersionObject> toWait = new ArrayList<>();
+				toWait.add(writers);
 				mutex.unlock();
-				customWait(writers);
+				customWait(toWait);
 				mutex.lock();
 			} catch (CloneNotSupportedException | InterruptedException e) {
 				e.printStackTrace();
@@ -42,8 +46,11 @@ public class ReaderWriter extends Monitor{
 		while(writers.getValue() != 0 || readers.getValue() != 0)
 		{
 			try {
+				ArrayList<VersionObject> toWait = new ArrayList<>();
+				toWait.add(readers);
+				toWait.add(writers);
 				mutex.unlock();
-				customWait(readers);
+				customWait(toWait);
 				mutex.lock();
 			} catch (CloneNotSupportedException | InterruptedException e) {
 				// TODO Auto-generated catch block

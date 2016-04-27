@@ -13,22 +13,22 @@ public class VersionObject
 		this.id = uniqueId;
 	}
 		
-	public int getVersion()
+	public synchronized int getVersion()
 	{
 		return version;
 	}
 	
-	public void incrementVersion()
+	public synchronized void incrementVersion()
 	{
 		version++;
 	}
 	
-	public void setVersion(int version){
+	public synchronized void setVersion(int version){
 		this.version = version;
 	}
 	
 	@Override
-	public boolean equals(Object obj)
+	public synchronized boolean equals(Object obj)
 	{
 		if(!(obj instanceof VersionObject))
 			return false;
@@ -37,7 +37,7 @@ public class VersionObject
 		return false;
 	}
 	
-	public boolean equalsVersion(Object obj){
+	public synchronized boolean equalsVersion(Object obj){
 		if(!(obj instanceof VersionObject))
 			return false;
 		else if(this.version == ((VersionObject)obj).getVersion())
@@ -46,11 +46,11 @@ public class VersionObject
 	}
 	
 	@Override
-	public VersionObject clone(){
+	public synchronized VersionObject clone(){
 		VersionObject newObj = new VersionObject(getVersion(), getId());
 		return newObj;
 	}
-	public int getId() {
+	public synchronized int getId() {
 		// TODO Auto-generated method stub
 		return this.id;
 	}

@@ -10,42 +10,43 @@ import java.util.function.Predicate;
 
 public class Monitor {
 
-
-	ArrayList<VersionObject> thingsAlreadyWaitingOn = new ArrayList<>(); 
-	ArrayList<VersionObject> localCopyOfObjects = new ArrayList<>();
-	HashMap<Integer, ArrayList<Condition>> conditionVariables = new HashMap<>(); //will group threads into different conditions
-	boolean readyToAwake = false;
 	public Monitor(){
 		Thread notifier = new Thread(new ThreadNotifier());
 		notifier.start();
 	}
-	
+	final ArrayList<VersionObject> thingsAlreadyWaitingOn = new ArrayList<>(); 
+	final ArrayList<VersionObject> localCopyOfObjects = new ArrayList<>();
+	final HashMap<Integer, ArrayList<Condition>> conditionVariables = new HashMap<>(); //will group threads into different conditions
+	boolean readyToAwake = false;
 	final private Lock aLock = new ReentrantLock();
 	final protected Lock mutex = new ReentrantLock();
 
- public void customWait(VersionObject toWaitOn) throws CloneNotSupportedException, InterruptedException
+	public void customWait(ArrayList<VersionObject> listOfToWaitOn) throws CloneNotSupportedException, InterruptedException
 	{
 	 	mutex.lock();
 		aLock.lock();
 		Condition newCond = null;
 		//Only checks the ID, not the version
-		if(!thingsAlreadyWaitingOn.contains(toWaitOn)) //not here so need to add it
+		for(VersionObject toWaitOn: listOfToWaitOn)
 		{
-			thingsAlreadyWaitingOn.add(toWaitOn);
-			localCopyOfObjects.add(toWaitOn.clone()); //local copy of object to know if it changes in future
-			ArrayList<Condition> newConditionList = new ArrayList<Condition>();
-			newCond = aLock.newCondition();
-			newConditionList.add(newCond);
-			conditionVariables.put(toWaitOn.getId(), newConditionList);	//each parameter will point to an arraylist of conditions (threads waiting for it)
-		}
-		else{
-			ArrayList<Condition> listToAddTo = conditionVariables.get(thingsAlreadyWaitingOn.get(thingsAlreadyWaitingOn.indexOf(toWaitOn)).getId());
-			newCond = aLock.newCondition();
-			listToAddTo.add(newCond);
-		}
-		
-		if(!readyToAwake){
-			readyToAwake = true;
+			if(!thingsAlreadyWaitingOn.contains(toWaitOn)) //not here so need to add it
+			{
+				thingsAlreadyWaitingOn.add(toWaitOn);
+				localCopyOfObjects.add(toWaitOn.clone()); //local copy of object to know if it changes in future
+				ArrayList<Condition> newConditionList = new ArrayList<Condition>();
+				newCond = aLock.newCondition();
+				newConditionList.add(newCond);
+				conditionVariables.put(toWaitOn.getId(), newConditionList);	//each parameter will point to an arraylist of conditions (threads waiting for it)
+			}
+			else{
+				ArrayList<Condition> listToAddTo = conditionVariables.get(toWaitOn.getId());
+				newCond = aLock.newCondition();
+				listToAddTo.add(newCond);
+			}
+			
+			if(!readyToAwake){
+				readyToAwake = true;
+			}
 		}
 		mutex.unlock();
 		newCond.await();
@@ -56,11 +57,10 @@ public class Monitor {
 	{
 		public void run()
 		{
-			
 			while(true){
+				mutex.lock();
+				aLock.lock();
 				if(readyToAwake){
-					mutex.lock();
-					aLock.lock();
 					for(Integer id : conditionVariables.keySet())
 					{
 						VersionObject dummy = new VersionObject(-1, id);
@@ -81,9 +81,9 @@ public class Monitor {
 							localCopyOfObjects.set(index, refCopy.clone());
 						}
 					}
-					aLock.unlock();
-					mutex.unlock();
 				}
+				aLock.unlock();
+				mutex.unlock();
 			}
 		}
 	}
