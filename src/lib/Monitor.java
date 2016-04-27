@@ -42,13 +42,13 @@ public class Monitor {
 				listToAddTo.add(newCond);
 			}
 			
-			if(!readyToAwake){
+			if(!readyToAwake){ //ensures that an entry will be in the hashtable before ThreadNotifier kicks in
 				readyToAwake = true;
 			}
 		}
 		mutex.unlock();
 		newCond.await();
-		aLock.unlock();
+		aLock.unlock(); //Condition will return with the lock acquired so release it
 	}
 	
 	class ThreadNotifier implements Runnable 
@@ -58,14 +58,14 @@ public class Monitor {
 			while(true){
 				mutex.lock();
 				aLock.lock();
-				if(readyToAwake){
+				if(readyToAwake){ //if wait has been called at least once
 					for(Integer id : conditionVariables.keySet())
 					{
 						VersionObject dummy = new VersionObject(-1, id);
 						VersionObject localCopy = localCopyOfObjects.get(localCopyOfObjects.indexOf(dummy));
 						VersionObject refCopy = thingsAlreadyWaitingOn.get(thingsAlreadyWaitingOn.indexOf(dummy));
 						//Checks the version and the id
-						if(!localCopy.equalsVersion(refCopy)) //if local copy is different to actual object
+						if(!localCopy.equalsVersion(refCopy)) //if local copy revision is different to ref object revision
 						{
 							//if object changed, (not equal to local copy), notify all waiting threads on that variable
 							ArrayList<Condition> conditionList = conditionVariables.get(id); //get conditions in hash table
