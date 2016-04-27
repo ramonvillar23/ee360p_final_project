@@ -12,7 +12,7 @@ public class Main extends Monitor{
 	{
 		super();
 	}
-	ReaderWriter rw = new ReaderWriter();
+	ReaderWriterImplicit rw = new ReaderWriterImplicit();
 	public static void main(String[] args) {		
 		//IntThread thread1 = new IntThread(newInt, mon, 1);
 		//IntThread thread2 = new IntThread(newInt, mon, 2);

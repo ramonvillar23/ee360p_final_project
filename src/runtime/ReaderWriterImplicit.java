@@ -6,7 +6,7 @@ import lib.Monitor;
 import lib.VersionInteger;
 import lib.VersionObject;
 
-public class ReaderWriter extends Monitor{
+public class ReaderWriterImplicit extends Monitor{
 
 	private VersionInteger readers  = new VersionInteger(0, "readers");
 	private VersionInteger writers  = new VersionInteger(0, "writers");
