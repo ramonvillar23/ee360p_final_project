@@ -10,7 +10,7 @@ public class ReaderWriterImplicit extends Monitor{
 
 	private VersionInteger readers  = new VersionInteger(0, "readers");
 	private VersionInteger writers  = new VersionInteger(0, "writers");
-	void startRead()
+	public void startRead()
 	{
 		mutex.lock();
 		//System.out.println("About to request read");
@@ -32,7 +32,7 @@ public class ReaderWriterImplicit extends Monitor{
 		mutex.unlock();
 	}
 	
-	void endRead()
+	public void endRead()
 	{
 		mutex.lock();
 		System.out.println(Thread.currentThread().getId()+":Exiting read");
@@ -40,7 +40,7 @@ public class ReaderWriterImplicit extends Monitor{
 		mutex.unlock();
 	}
 	
-	void startWrite()
+	public void startWrite()
 	{
 		mutex.lock();
 		//System.out.println("About to request write");
@@ -64,7 +64,7 @@ public class ReaderWriterImplicit extends Monitor{
 		mutex.unlock();
 	}
 	
-	void endWrite()
+	public void endWrite()
 	{
 		mutex.lock();
 		System.out.println(Thread.currentThread().getId()+":Exiting write");
