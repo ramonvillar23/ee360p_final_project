@@ -2,7 +2,7 @@ package runtime;
 
 import java.util.concurrent.locks.*;
 
-class ProducerConsumerExplicit {
+public class ProducerConsumerExplicit {
    final int size = 10;
    final ReentrantLock monitorLock = new ReentrantLock();
    final Condition notFull  = monitorLock.newCondition(); 

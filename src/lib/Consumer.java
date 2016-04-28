@@ -1,17 +1,17 @@
 package lib;
 
-import runtime.ProducerConsumerExplicit;
+import runtime.ProducerConsumerImplicit;
 
 public class Consumer implements Runnable {
 	/**
 	 * 
 	 */
-	private ProducerConsumerExplicit pc;
+	private ProducerConsumerImplicit pc;
 
 	/**
 	 * @param main
 	 */
-	public Consumer(ProducerConsumerExplicit pcSent) {
+	public Consumer(ProducerConsumerImplicit pcSent) {
 		this.pc = pcSent;
 	}
 

@@ -10,13 +10,11 @@ public class Main{
 	{
 		super();
 	}
-	
+	//program to measure time it takes to do results
 	public static void main(String[] args) {		
-		//IntThread thread1 = new IntThread(newInt, mon, 1);
-		//IntThread thread2 = new IntThread(newInt, mon, 2);
 		ArrayList<Long> results = new ArrayList<Long>();
 		for(int j = 0; j < 10; j++){
-			ProducerConsumerImplicit pc = new ProducerConsumerImplicit();
+			ReaderWriterImplicit rw = new ReaderWriterImplicit();
 			ArrayList<Thread> threads = new ArrayList<Thread>();
 			for(int i = 0; i < 1; i++){
 				threads.add(new Thread(new Reader(rw)));
